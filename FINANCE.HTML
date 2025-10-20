@@ -1,0 +1,2333 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AMON FINANCIAL APP</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Chart.js for Reports -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style id="app-style">
+        body {
+            font-family: 'Poppins', sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .dark {
+            background-color: #1a1a2e;
+            color: #f1f1f1;
+        }
+
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background-color: #555;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .progress-bar {
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            transition: width 0.5s ease-in-out;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .slide-in {
+            animation: slideIn 0.3s forwards;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .notification-dot {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+
+        .bg-gradient-primary {
+            background: linear-gradient(120deg, #6366f1, #8b5cf6);
+        }
+
+        .bg-gradient-secondary {
+            background: linear-gradient(120deg, #10b981, #3b82f6);
+        }
+
+        .onboarding-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50">
+    <div id="app" class="min-h-screen flex flex-col">
+        <!-- Onboarding Modal (Hidden by default, shown on first visit) -->
+        <div id="onboarding-modal" class="hidden onboarding-overlay">
+            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-md mx-4">
+                <h2 class="text-2xl font-bold mb-4 text-indigo-600 dark:text-indigo-400">WELCOME TO AMON FINANCIAL
+                    MANAGEMENT APP
+</h2>
+                <p class="mb-6 text-gray-600 dark:text-gray-300">Let's set up your financial profile in a few quick
+                    steps.</p>
+
+                <div id="onboarding-steps">
+                    <!-- Step 1: Income Sources -->
+                    <div class="onboarding-step" data-step="1">
+                        <h3 class="text-lg font-semibold mb-3">Step 1: Add Your Income Sources</h3>
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Income Source
+                                Name</label>
+                            <input type="text"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                placeholder="e.g., Salary, Freelancing">
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Monthly
+                                Amount ($)</label>
+                            <input type="number"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                placeholder="0.00">
+                        </div>
+                        <button
+                            class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 transition-colors">Add
+                            Income Source</button>
+
+                        <div class="mt-4 flex justify-end">
+                            <button class="onboarding-next text-indigo-600 font-medium hover:text-indigo-800">Next <i
+                                    class="fas fa-arrow-right ml-1"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Expense Categories -->
+                    <div class="onboarding-step hidden" data-step="2">
+                        <h3 class="text-lg font-semibold mb-3">Step 2: Set Up Expense Categories</h3>
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Category
+                                Name</label>
+                            <input type="text"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                placeholder="e.g., Rent, Groceries, Entertainment">
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Monthly
+                                Budget ($)</label>
+                            <input type="number"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                placeholder="0.00">
+                        </div>
+                        <button
+                            class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 transition-colors">Add
+                            Category</button>
+
+                        <div class="mt-4 flex justify-between">
+                            <button class="onboarding-prev text-gray-600 font-medium hover:text-gray-800"><i
+                                    class="fas fa-arrow-left mr-1"></i> Previous</button>
+                            <button class="onboarding-next text-indigo-600 font-medium hover:text-indigo-800">Next <i
+                                    class="fas fa-arrow-right ml-1"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Finish -->
+                    <div class="onboarding-step hidden" data-step="3">
+                        <h3 class="text-lg font-semibold mb-3">Step 3: You're All Set!</h3>
+                        <p class="mb-4 text-gray-600 dark:text-gray-300">Your PocketPilot Finance account is ready to
+                            go. You can always adjust your settings later.</p>
+                        <div class="mb-6 bg-indigo-100 dark:bg-indigo-900/30 p-4 rounded-md">
+                            <p class="text-sm text-indigo-700 dark:text-indigo-300"><i
+                                    class="fas fa-lightbulb mr-2"></i> Pro tip: Track your transactions regularly for
+                                the most accurate insights!</p>
+                        </div>
+
+                        <div class="mt-6 flex justify-between">
+                            <button class="onboarding-prev text-gray-600 font-medium hover:text-gray-800"><i
+                                    class="fas fa-arrow-left mr-1"></i> Previous</button>
+                            <button id="finish-onboarding"
+                                class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors">Start
+                                Using PocketPilot <i class="fas fa-rocket ml-1"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Header with Net Worth -->
+        <header class="bg-white dark:bg-gray-800 shadow-md py-4 px-4 sm:px-6 lg:px-8 sticky top-0 z-10">
+            <div class="container mx-auto flex flex-col sm:flex-row justify-between items-center">
+                <div class="flex items-center mb-3 sm:mb-0">
+                    <div class="bg-gradient-primary p-2 rounded-md text-white mr-3">
+                        <i class="fas fa-wallet text-xl"></i>
+                    </div>
+                    <h1 class="text-xl font-bold text-gray-800 dark:text-white">PocketPilot Finance</h1>
+                </div>
+
+                <div class="flex flex-col items-center sm:items-end">
+                    <span class="text-sm text-gray-500 dark:text-gray-400">Net Worth</span>
+                    <span class="text-2xl font-bold text-indigo-600 dark:text-indigo-400">$4,325.68</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Navigation -->
+        <nav class="bg-indigo-600 text-white py-2 px-4 sm:px-6 lg:px-8">
+            <div class="container mx-auto">
+                <ul class="flex space-x-1 sm:space-x-4 overflow-x-auto whitespace-nowrap py-1" id="main-nav">
+                    <li>
+                        <a href="javascript:void(0)"
+                            class="nav-link active px-3 py-2 rounded-md hover:bg-indigo-700 transition-colors flex items-center"
+                            data-target="dashboard">
+                            <i class="fas fa-home mr-2"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0)"
+                            class="nav-link px-3 py-2 rounded-md hover:bg-indigo-700 transition-colors flex items-center"
+                            data-target="transactions">
+                            <i class="fas fa-exchange-alt mr-2"></i>
+                            <span>Transactions</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0)"
+                            class="nav-link px-3 py-2 rounded-md hover:bg-indigo-700 transition-colors flex items-center"
+                            data-target="budgets">
+                            <i class="fas fa-chart-pie mr-2"></i>
+                            <span>Budgets</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0)"
+                            class="nav-link px-3 py-2 rounded-md hover:bg-indigo-700 transition-colors flex items-center"
+                            data-target="reports">
+                            <i class="fas fa-chart-bar mr-2"></i>
+                            <span>Reports</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0)"
+                            class="nav-link px-3 py-2 rounded-md hover:bg-indigo-700 transition-colors flex items-center"
+                            data-target="settings">
+                            <i class="fas fa-cog mr-2"></i>
+                            <span>Settings</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Main Content Container -->
+        <main class="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <!-- Dashboard View (Default) -->
+            <div id="dashboard-view" class="page-view">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Left Column - Financial Summary -->
+                    <div class="lg:col-span-2">
+                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <h2 class="text-xl font-semibold text-gray-800 dark:text-white">Financial Summary</h2>
+                                <div class="tooltip">
+                                    <i class="fas fa-info-circle text-gray-400"></i>
+                                    <span class="tooltiptext">Overview of your current financial status</span>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <!-- Income Summary -->
+                                <div class="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">
+                                    <div class="flex justify-between items-center mb-2">
+                                        <span class="text-sm font-medium text-gray-600 dark:text-gray-300">Monthly
+                                            Income</span>
+                                        <span
+                                            class="text-lg font-bold text-green-600 dark:text-green-400">$3,450.00</span>
+                                    </div>
+                                    <div class="flex items-center text-green-600 dark:text-green-400">
+                                        <i class="fas fa-arrow-up mr-1"></i>
+                                        <span class="text-xs">5.2% from last month</span>
+                                    </div>
+                                </div>
+
+                                <!-- Expenses Summary -->
+                                <div class="bg-red-50 dark:bg-red-900/20 p-4 rounded-lg">
+                                    <div class="flex justify-between items-center mb-2">
+                                        <span class="text-sm font-medium text-gray-600 dark:text-gray-300">Monthly
+                                            Expenses</span>
+                                        <span class="text-lg font-bold text-red-600 dark:text-red-400">$2,145.32</span>
+                                    </div>
+                                    <div class="flex items-center text-red-600 dark:text-red-400">
+                                        <i class="fas fa-arrow-down mr-1"></i>
+                                        <span class="text-xs">2.8% from last month</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mt-6">
+                                <h3 class="text-md font-medium text-gray-700 dark:text-gray-300 mb-2">Savings Progress
+                                </h3>
+                                <div class="bg-gray-200 dark:bg-gray-700 rounded-full progress-bar">
+                                    <div class="bg-indigo-500 progress-fill rounded-full" style="width: 65%"></div>
+                                </div>
+                                <div class="flex justify-between mt-1 text-sm text-gray-600 dark:text-gray-400">
+                                    <span>$845.25 saved</span>
+                                    <span>Goal: $1,300.00</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Mini Charts Summary -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                            <!-- Income by Category -->
+                            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
+                                <h3 class="text-md font-semibold text-gray-800 dark:text-white mb-4">Income Breakdown
+                                </h3>
+                                <div class="chart-container h-48">
+                                    <canvas id="income-chart"></canvas>
+                                </div>
+                            </div>
+
+                            <!-- Expenses by Category -->
+                            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
+                                <h3 class="text-md font-semibold text-gray-800 dark:text-white mb-4">Top Expenses</h3>
+                                <div class="chart-container h-48">
+                                    <canvas id="expenses-chart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Upcoming Bills -->
+                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <h2 class="text-xl font-semibold text-gray-800 dark:text-white">Upcoming Bills</h2>
+                                <button
+                                    class="text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300 text-sm font-medium">View
+                                    All</button>
+                            </div>
+
+                            <div class="divide-y divide-gray-200 dark:divide-gray-700">
+                                <!-- Bill Item -->
+                                <div class="py-3 flex justify-between items-center">
+                                    <div class="flex items-center">
+                                        <div
+                                            class="bg-blue-100 dark:bg-blue-900/30 p-2 rounded-md text-blue-500 dark:text-blue-400 mr-3">
+                                            <i class="fas fa-home"></i>
+                                        </div>
+                                        <div>
+                                            <p class="font-medium text-gray-800 dark:text-white">Rent</p>
+                                            <p class="text-xs text-gray-500 dark:text-gray-400">Due in 5 days</p>
+                                        </div>
+                                    </div>
+                                    <span class="font-bold text-gray-800 dark:text-white">$950.00</span>
+                                </div>
+
+                                <!-- Bill Item -->
+                                <div class="py-3 flex justify-between items-center">
+                                    <div class="flex items-center">
+                                        <div
+                                            class="bg-purple-100 dark:bg-purple-900/30 p-2 rounded-md text-purple-500 dark:text-purple-400 mr-3">
+                                            <i class="fas fa-bolt"></i>
+                                        </div>
+                                        <div>
+                                            <p class="font-medium text-gray-800 dark:text-white">Electricity</p>
+                                            <p class="text-xs text-gray-500 dark:text-gray-400">Due in 8 days</p>
+                                        </div>
+                                    </div>
+                                    <span class="font-bold text-gray-800 dark:text-white">$78.35</span>
+                                </div>
+
+                                <!-- Bill Item -->
+                                <div class="py-3 flex justify-between items-center">
+                                    <div class="flex items-center">
+                                        <div
+                                            class="bg-green-100 dark:bg-green-900/30 p-2 rounded-md text-green-500 dark:text-green-400 mr-3">
+                                            <i class="fas fa-wifi"></i>
+                                        </div>
+                                        <div>
+                                            <p class="font-medium text-gray-800 dark:text-white">Internet</p>
+                                            <p class="text-xs text-gray-500 dark:text-gray-400">Due in 12 days</p>
+                                        </div>
+                                    </div>
+                                    <span class="font-bold text-gray-800 dark:text-white">$65.99</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column - Transactions & Budget -->
+                    <div class="space-y-6">
+                        <!-- Quick Actions -->
+                        <div class="bg-gradient-primary rounded-lg shadow-md p-6 text-white">
+                            <h2 class="text-xl font-semibold mb-4">Quick Actions</h2>
+                            <div class="grid grid-cols-2 gap-3">
+                                <button id="add-transaction-btn"
+                                    class="bg-white bg-opacity-20 hover:bg-opacity-30 transition-colors py-3 px-4 rounded-md flex flex-col items-center">
+                                    <i class="fas fa-plus-circle text-xl mb-1"></i>
+                                    <span class="text-sm">Add Transaction</span>
+                                </button>
+                                <button
+                                    class="bg-white bg-opacity-20 hover:bg-opacity-30 transition-colors py-3 px-4 rounded-md flex flex-col items-center">
+                                    <i class="fas fa-file-invoice-dollar text-xl mb-1"></i>
+                                    <span class="text-sm">New Bill</span>
+                                </button>
+                                <button
+                                    class="bg-white bg-opacity-20 hover:bg-opacity-30 transition-colors py-3 px-4 rounded-md flex flex-col items-center">
+                                    <i class="fas fa-bullseye text-xl mb-1"></i>
+                                    <span class="text-sm">Set Goal</span>
+                                </button>
+                                <button
+                                    class="bg-white bg-opacity-20 hover:bg-opacity-30 transition-colors py-3 px-4 rounded-md flex flex-col items-center">
+                                    <i class="fas fa-chart-line text-xl mb-1"></i>
+                                    <span class="text-sm">View Insights</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Recent Transactions -->
+                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <h2 class="text-xl font-semibold text-gray-800 dark:text-white">Recent Transactions</h2>
+                                <button
+                                    class="text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300 text-sm font-medium">See
+                                    All</button>
+                            </div>
+
+                            <div class="space-y-4 max-h-96 overflow-y-auto custom-scrollbar">
+                                <!-- Transaction Item -->
+                                <div
+                                    class="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                                    <div class="flex items-center">
+                                        <div
+                                            class="bg-red-100 dark:bg-red-900/30 p-2 rounded-full text-red-500 dark:text-red-400 mr-3">
+                                            <i class="fas fa-shopping-cart"></i>
+                                        </div>
+                                        <div>
+                                            <p class="font-medium text-gray-800 dark:text-white">Grocery Store</p>
+                                            <p class="text-xs text-gray-500 dark:text-gray-400">Today, 10:45 AM</p>
+                                        </div>
+                                    </div>
+                                    <span class="font-bold text-red-500 dark:text-red-400">-$85.32</span>
+                                </div>
+
+                                <!-- Transaction Item -->
+                                <div
+                                    class="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                                    <div class="flex items-center">
+                                        <div
+                                            class="bg-green-100 dark:bg-green-900/30 p-2 rounded-full text-green-500 dark:text-green-400 mr-3">
+                                            <i class="fas fa-briefcase"></i>
+                                        </div>
+                                        <div>
+                                            <p class="font-medium text-gray-800 dark:text-white">Salary Deposit</p>
+                                            <p class="text-xs text-gray-500 dark:text-gray-400">Yesterday</p>
+                                        </div>
+                                    </div>
+                                    <span class="font-bold text-green-500 dark:text-green-400">+$1,750.00</span>
+                                </div>
+
+                                <!-- Transaction Item -->
+                                <div
+                                    class="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                                    <div class="flex items-center">
+                                        <div
+                                            class="bg-red-100 dark:bg-red-900/30 p-2 rounded-full text-red-500 dark:text-red-400 mr-3">
+                                            <i class="fas fa-utensils"></i>
+                                        </div>
+                                        <div>
+                                            <p class="font-medium text-gray-800 dark:text-white">Restaurant</p>
+                                            <p class="text-xs text-gray-500 dark:text-gray-400">2 days ago</p>
+                                        </div>
+                                    </div>
+                                    <span class="font-bold text-red-500 dark:text-red-400">-$42.75</span>
+                                </div>
+
+                                <!-- Transaction Item -->
+                                <div
+                                    class="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                                    <div class="flex items-center">
+                                        <div
+                                            class="bg-red-100 dark:bg-red-900/30 p-2 rounded-full text-red-500 dark:text-red-400 mr-3">
+                                            <i class="fas fa-tshirt"></i>
+                                        </div>
+                                        <div>
+                                            <p class="font-medium text-gray-800 dark:text-white">Clothing Store</p>
+                                            <p class="text-xs text-gray-500 dark:text-gray-400">3 days ago</p>
+                                        </div>
+                                    </div>
+                                    <span class="font-bold text-red-500 dark:text-red-400">-$128.50</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Budget Overview -->
+                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <h2 class="text-xl font-semibold text-gray-800 dark:text-white">Budget Overview</h2>
+                                <button
+                                    class="text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300 text-sm font-medium">Manage</button>
+                            </div>
+
+                            <div class="space-y-4">
+                                <!-- Budget Category -->
+                                <div>
+                                    <div class="flex justify-between mb-1">
+                                        <span
+                                            class="text-sm font-medium text-gray-700 dark:text-gray-300">Groceries</span>
+                                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">$245 /
+                                            $300</span>
+                                    </div>
+                                    <div class="bg-gray-200 dark:bg-gray-700 rounded-full progress-bar">
+                                        <div class="bg-blue-500 progress-fill rounded-full" style="width: 82%"></div>
+                                    </div>
+                                </div>
+
+                                <!-- Budget Category -->
+                                <div>
+                                    <div class="flex justify-between mb-1">
+                                        <span
+                                            class="text-sm font-medium text-gray-700 dark:text-gray-300">Entertainment</span>
+                                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">$120 /
+                                            $150</span>
+                                    </div>
+                                    <div class="bg-gray-200 dark:bg-gray-700 rounded-full progress-bar">
+                                        <div class="bg-green-500 progress-fill rounded-full" style="width: 80%"></div>
+                                    </div>
+                                </div>
+
+                                <!-- Budget Category (Warning) -->
+                                <div>
+                                    <div class="flex justify-between mb-1">
+                                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Dining
+                                            Out</span>
+                                        <span class="text-sm font-medium text-yellow-600 dark:text-yellow-400">$190 /
+                                            $200</span>
+                                    </div>
+                                    <div class="bg-gray-200 dark:bg-gray-700 rounded-full progress-bar">
+                                        <div class="bg-yellow-500 progress-fill rounded-full" style="width: 95%"></div>
+                                    </div>
+                                </div>
+
+                                <!-- Budget Category (Exceeded) -->
+                                <div>
+                                    <div class="flex justify-between mb-1">
+                                        <span
+                                            class="text-sm font-medium text-gray-700 dark:text-gray-300">Shopping</span>
+                                        <span class="text-sm font-medium text-red-600 dark:text-red-400">$320 /
+                                            $250</span>
+                                    </div>
+                                    <div class="bg-gray-200 dark:bg-gray-700 rounded-full progress-bar">
+                                        <div class="bg-red-500 progress-fill rounded-full" style="width: 100%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Transactions View (Hidden) -->
+            <div id="transactions-view" class="page-view hidden">
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                    <div class="flex flex-col md:flex-row md:justify-between md:items-center mb-6 gap-4">
+                        <h2 class="text-2xl font-bold text-gray-800 dark:text-white">All Transactions</h2>
+
+                        <div class="flex flex-col sm:flex-row gap-3">
+                            <div class="relative">
+                                <input type="text" placeholder="Search transactions..."
+                                    class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:text-white">
+                                <i class="fas fa-search absolute right-3 top-3 text-gray-400"></i>
+                            </div>
+
+                            <div class="flex gap-2">
+                                <select
+                                    class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:text-white">
+                                    <option value="">All Categories</option>
+                                    <option value="food">Food & Dining</option>
+                                    <option value="bills">Bills & Utilities</option>
+                                    <option value="transport">Transportation</option>
+                                    <option value="shopping">Shopping</option>
+                                    <option value="entertainment">Entertainment</option>
+                                    <option value="income">Income</option>
+                                </select>
+
+                                <button id="add-transaction-btn-2"
+                                    class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition-colors flex items-center">
+                                    <i class="fas fa-plus mr-2"></i> Add
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                            <thead class="bg-gray-50 dark:bg-gray-700">
+                                <tr>
+                                    <th scope="col"
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                        Date</th>
+                                    <th scope="col"
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                        Description</th>
+                                    <th scope="col"
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                        Category</th>
+                                    <th scope="col"
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                        Amount</th>
+                                    <th scope="col"
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                        Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                                <!-- Transaction Row -->
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">Jun
+                                        15, 2025</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div
+                                                class="flex-shrink-0 h-8 w-8 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center text-red-500 dark:text-red-400">
+                                                <i class="fas fa-shopping-cart"></i>
+                                            </div>
+                                            <div class="ml-4">
+                                                <div class="text-sm font-medium text-gray-900 dark:text-white">Grocery
+                                                    Store</div>
+                                                <div class="text-sm text-gray-500 dark:text-gray-400">Weekly shopping
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span
+                                            class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300">
+                                            Groceries
+                                        </span>
+                                    </td>
+                                    <td
+                                        class="px-6 py-4 whitespace-nowrap text-sm font-medium text-red-600 dark:text-red-400">
+                                        -$85.32</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                        <button
+                                            class="text-indigo-600 hover:text-indigo-900 dark:hover:text-indigo-400 mr-3">Edit</button>
+                                        <button
+                                            class="text-red-600 hover:text-red-900 dark:hover:text-red-400">Delete</button>
+                                    </td>
+                                </tr>
+
+                                <!-- Transaction Row -->
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">Jun
+                                        14, 2025</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div
+                                                class="flex-shrink-0 h-8 w-8 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center text-green-500 dark:text-green-400">
+                                                <i class="fas fa-briefcase"></i>
+                                            </div>
+                                            <div class="ml-4">
+                                                <div class="text-sm font-medium text-gray-900 dark:text-white">Salary
+                                                    Deposit</div>
+                                                <div class="text-sm text-gray-500 dark:text-gray-400">Bi-weekly payment
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span
+                                            class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300">
+                                            Income
+                                        </span>
+                                    </td>
+                                    <td
+                                        class="px-6 py-4 whitespace-nowrap text-sm font-medium text-green-600 dark:text-green-400">
+                                        +$1,750.00</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                        <button
+                                            class="text-indigo-600 hover:text-indigo-900 dark:hover:text-indigo-400 mr-3">Edit</button>
+                                        <button
+                                            class="text-red-600 hover:text-red-900 dark:hover:text-red-400">Delete</button>
+                                    </td>
+                                </tr>
+
+                                <!-- More transaction rows here -->
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">Jun
+                                        13, 2025</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div
+                                                class="flex-shrink-0 h-8 w-8 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center text-red-500 dark:text-red-400">
+                                                <i class="fas fa-utensils"></i>
+                                            </div>
+                                            <div class="ml-4">
+                                                <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                                    Restaurant</div>
+                                                <div class="text-sm text-gray-500 dark:text-gray-400">Dinner with
+                                                    friends</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span
+                                            class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300">
+                                            Dining Out
+                                        </span>
+                                    </td>
+                                    <td
+                                        class="px-6 py-4 whitespace-nowrap text-sm font-medium text-red-600 dark:text-red-400">
+                                        -$42.75</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                        <button
+                                            class="text-indigo-600 hover:text-indigo-900 dark:hover:text-indigo-400 mr-3">Edit</button>
+                                        <button
+                                            class="text-red-600 hover:text-red-900 dark:hover:text-red-400">Delete</button>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">Jun
+                                        12, 2025</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div
+                                                class="flex-shrink-0 h-8 w-8 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center text-red-500 dark:text-red-400">
+                                                <i class="fas fa-tshirt"></i>
+                                            </div>
+                                            <div class="ml-4">
+                                                <div class="text-sm font-medium text-gray-900 dark:text-white">Clothing
+                                                    Store</div>
+                                                <div class="text-sm text-gray-500 dark:text-gray-400">Summer clothes
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span
+                                            class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300">
+                                            Shopping
+                                        </span>
+                                    </td>
+                                    <td
+                                        class="px-6 py-4 whitespace-nowrap text-sm font-medium text-red-600 dark:text-red-400">
+                                        -$128.50</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                        <button
+                                            class="text-indigo-600 hover:text-indigo-900 dark:hover:text-indigo-400 mr-3">Edit</button>
+                                        <button
+                                            class="text-red-600 hover:text-red-900 dark:hover:text-red-400">Delete</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    <div class="flex justify-between items-center mt-6">
+                        <div class="text-sm text-gray-700 dark:text-gray-300">
+                            Showing <span class="font-medium">1</span> to <span class="font-medium">10</span> of <span
+                                class="font-medium">24</span> transactions
+                        </div>
+                        <div class="flex space-x-2">
+                            <button
+                                class="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">Previous</button>
+                            <button class="px-3 py-1 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">1</button>
+                            <button
+                                class="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">2</button>
+                            <button
+                                class="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">3</button>
+                            <button
+                                class="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">Next</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Budgets View (Hidden) -->
+            <div id="budgets-view" class="page-view hidden">
+                <div class="mb-6 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+                    <h2 class="text-2xl font-bold text-gray-800 dark:text-white">Budget Management</h2>
+
+                    <div class="flex gap-3">
+                        <select
+                            class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:text-white">
+                            <option value="current">Current Month</option>
+                            <option value="previous">Previous Month</option>
+                            <option value="custom">Custom Period</option>
+                        </select>
+
+                        <button
+                            class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition-colors flex items-center">
+                            <i class="fas fa-plus mr-2"></i> New Budget
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
+                    <h3 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">Monthly Overview</h3>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                        <!-- Total Budget -->
+                        <div class="bg-indigo-50 dark:bg-indigo-900/20 p-4 rounded-lg">
+                            <h4 class="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">Total Budget</h4>
+                            <p class="text-2xl font-bold text-indigo-700 dark:text-indigo-400">$3,000.00</p>
+                        </div>
+
+                        <!-- Spent -->
+                        <div class="bg-red-50 dark:bg-red-900/20 p-4 rounded-lg">
+                            <h4 class="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">Spent</h4>
+                            <p class="text-2xl font-bold text-red-600 dark:text-red-400">$2,145.32</p>
+                            <span class="text-xs text-gray-500 dark:text-gray-400">71.5% of budget</span>
+                        </div>
+
+                        <!-- Remaining -->
+                        <div class="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">
+                            <h4 class="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">Remaining</h4>
+                            <p class="text-2xl font-bold text-green-600 dark:text-green-400">$854.68</p>
+                            <span class="text-xs text-gray-500 dark:text-gray-400">28.5% of budget</span>
+                        </div>
+                    </div>
+
+                    <!-- Overall Progress -->
+                    <div class="mb-8">
+                        <div class="flex justify-between mb-2">
+                            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Budget Progress</span>
+                            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">71.5%</span>
+                        </div>
+                        <div class="bg-gray-200 dark:bg-gray-700 rounded-full progress-bar">
+                            <div class="bg-indigo-500 progress-fill rounded-full" style="width: 71.5%"></div>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                            <thead class="bg-gray-50 dark:bg-gray-700">
+                                <tr>
+                                    <th scope="col"
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                        Category</th>
+                                    <th scope="col"
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                        Budget</th>
+                                    <th scope="col"
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                        Spent</th>
+                                    <th scope="col"
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                        Remaining</th>
+                                    <th scope="col"
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                        Progress</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                                <!-- Budget Row -->
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div
+                                                class="flex-shrink-0 h-8 w-8 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center text-blue-500 dark:text-blue-400">
+                                                <i class="fas fa-shopping-basket"></i>
+                                            </div>
+                                            <div class="ml-4 font-medium text-gray-900 dark:text-white">Groceries</div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                        $300.00</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                        $245.00</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                        $55.00</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+                                            <div class="bg-blue-500 h-2.5 rounded-full" style="width: 82%"></div>
+                                        </div>
+                                        <span class="text-xs text-gray-500 dark:text-gray-400">82%</span>
+                                    </td>
+                                </tr>
+
+                                <!-- Budget Row -->
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div
+                                                class="flex-shrink-0 h-8 w-8 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center text-purple-500 dark:text-purple-400">
+                                                <i class="fas fa-home"></i>
+                                            </div>
+                                            <div class="ml-4 font-medium text-gray-900 dark:text-white">Housing</div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                        $1,200.00</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                        $1,200.00</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                        $0.00</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+                                            <div class="bg-purple-500 h-2.5 rounded-full" style="width: 100%"></div>
+                                        </div>
+                                        <span class="text-xs text-gray-500 dark:text-gray-400">100%</span>
+                                    </td>
+                                </tr>
+
+                                <!-- Budget Row (Warning) -->
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div
+                                                class="flex-shrink-0 h-8 w-8 bg-yellow-100 dark:bg-yellow-900/30 rounded-full flex items-center justify-center text-yellow-500 dark:text-yellow-400">
+                                                <i class="fas fa-utensils"></i>
+                                            </div>
+                                            <div class="ml-4 font-medium text-gray-900 dark:text-white">Dining Out</div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                        $200.00</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                        $190.00</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                        $10.00</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+                                            <div class="bg-yellow-500 h-2.5 rounded-full" style="width: 95%"></div>
+                                        </div>
+                                        <span class="text-xs text-yellow-600 dark:text-yellow-400">95% - Almost
+                                            depleted!</span>
+                                    </td>
+                                </tr>
+
+                                <!-- Budget Row (Exceeded) -->
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div
+                                                class="flex-shrink-0 h-8 w-8 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center text-red-500 dark:text-red-400">
+                                                <i class="fas fa-tshirt"></i>
+                                            </div>
+                                            <div class="ml-4 font-medium text-gray-900 dark:text-white">Shopping</div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                        $250.00</td>
+                                    <td
+                                        class="px-6 py-4 whitespace-nowrap text-sm text-red-600 dark:text-red-400 font-medium">
+                                        $320.00</td>
+                                    <td
+                                        class="px-6 py-4 whitespace-nowrap text-sm text-red-600 dark:text-red-400 font-medium">
+                                        -$70.00</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+                                            <div class="bg-red-500 h-2.5 rounded-full" style="width: 100%"></div>
+                                        </div>
+                                        <span class="text-xs text-red-600 dark:text-red-400">128% - Budget
+                                            exceeded!</span>
+                                    </td>
+                                </tr>
+
+                                <!-- More budget rows here -->
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div
+                                                class="flex-shrink-0 h-8 w-8 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center text-green-500 dark:text-green-400">
+                                                <i class="fas fa-bus"></i>
+                                            </div>
+                                            <div class="ml-4 font-medium text-gray-900 dark:text-white">Transportation
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                        $150.00</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                        $95.32</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                        $54.68</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+                                            <div class="bg-green-500 h-2.5 rounded-full" style="width: 63%"></div>
+                                        </div>
+                                        <span class="text-xs text-gray-500 dark:text-gray-400">63%</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reports View (Hidden) -->
+            <div id="reports-view" class="page-view hidden">
+                <div class="mb-6 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+                    <h2 class="text-2xl font-bold text-gray-800 dark:text-white">Financial Reports</h2>
+
+                    <div class="flex gap-3">
+                        <select id="report-period"
+                            class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:text-white">
+                            <option value="month">This Month</option>
+                            <option value="quarter">Last 3 Months</option>
+                            <option value="halfYear">Last 6 Months</option>
+                            <option value="year">Last 12 Months</option>
+                        </select>
+
+                        <button
+                            class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition-colors flex items-center">
+                            <i class="fas fa-file-pdf mr-2"></i> Download PDF
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Income vs Expenses -->
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
+                    <h3 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">Income vs Expenses</h3>
+                    <div class="chart-container">
+                        <canvas id="income-expense-chart"></canvas>
+                    </div>
+                    <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">
+                            <h4 class="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">Total Income</h4>
+                            <p class="text-2xl font-bold text-green-600 dark:text-green-400">$10,250.00</p>
+                        </div>
+                        <div class="bg-red-50 dark:bg-red-900/20 p-4 rounded-lg">
+                            <h4 class="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">Total Expenses</h4>
+                            <p class="text-2xl font-bold text-red-600 dark:text-red-400">$7,892.45</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Category Breakdown -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                    <!-- Expense by Category -->
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                        <h3 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">Expense by Category</h3>
+                        <div class="chart-container">
+                            <canvas id="expense-category-chart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Top Spending Categories -->
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                        <h3 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">Top Spending Categories
+                        </h3>
+                        <div class="space-y-4">
+                            <!-- Category -->
+                            <div>
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Housing</span>
+                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">$3,600
+                                        (45.6%)</span>
+                                </div>
+                                <div class="bg-gray-200 dark:bg-gray-700 rounded-full progress-bar">
+                                    <div class="bg-purple-500 progress-fill rounded-full" style="width: 45.6%"></div>
+                                </div>
+                            </div>
+
+                            <!-- Category -->
+                            <div>
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Groceries</span>
+                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">$1,250
+                                        (15.8%)</span>
+                                </div>
+                                <div class="bg-gray-200 dark:bg-gray-700 rounded-full progress-bar">
+                                    <div class="bg-blue-500 progress-fill rounded-full" style="width: 15.8%"></div>
+                                </div>
+                            </div>
+
+                            <!-- Category -->
+                            <div>
+                                <div class="flex justify-between mb-1">
+                                    <span
+                                        class="text-sm font-medium text-gray-700 dark:text-gray-300">Transportation</span>
+                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">$954
+                                        (12.1%)</span>
+                                </div>
+                                <div class="bg-gray-200 dark:bg-gray-700 rounded-full progress-bar">
+                                    <div class="bg-green-500 progress-fill rounded-full" style="width: 12.1%"></div>
+                                </div>
+                            </div>
+
+                            <!-- Category -->
+                            <div>
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Dining Out</span>
+                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">$782
+                                        (9.9%)</span>
+                                </div>
+                                <div class="bg-gray-200 dark:bg-gray-700 rounded-full progress-bar">
+                                    <div class="bg-yellow-500 progress-fill rounded-full" style="width: 9.9%"></div>
+                                </div>
+                            </div>
+
+                            <!-- Category -->
+                            <div>
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Shopping</span>
+                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">$650
+                                        (8.2%)</span>
+                                </div>
+                                <div class="bg-gray-200 dark:bg-gray-700 rounded-full progress-bar">
+                                    <div class="bg-red-500 progress-fill rounded-full" style="width: 8.2%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Monthly Trends -->
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                    <h3 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">Monthly Trends</h3>
+                    <div class="chart-container">
+                        <canvas id="monthly-trend-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings View (Hidden) -->
+            <div id="settings-view" class="page-view hidden">
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800 dark:text-white">Settings</h2>
+                    <p class="text-gray-600 dark:text-gray-400">Manage your account preferences and customize
+                        PocketPilot Finance.</p>
+                </div>
+
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
+                    <div class="flex border-b border-gray-200 dark:border-gray-700">
+                        <!-- Settings Tab Navigation -->
+                        <div
+                            class="bg-gray-100 dark:bg-gray-900 p-4 w-full md:w-1/4 border-r border-gray-200 dark:border-gray-700">
+                            <div class="space-y-1">
+                                <button
+                                    class="settings-tab-btn w-full flex items-center px-4 py-2 text-sm rounded-md bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 font-medium"
+                                    data-tab="categories">
+                                    <i class="fas fa-tags w-5"></i>
+                                    <span class="ml-2">Categories</span>
+                                </button>
+                                <button
+                                    class="settings-tab-btn w-full flex items-center px-4 py-2 text-sm rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
+                                    data-tab="accounts">
+                                    <i class="fas fa-university w-5"></i>
+                                    <span class="ml-2">Accounts</span>
+                                </button>
+                                <button
+                                    class="settings-tab-btn w-full flex items-center px-4 py-2 text-sm rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
+                                    data-tab="notifications">
+                                    <i class="fas fa-bell w-5"></i>
+                                    <span class="ml-2">Notifications</span>
+                                </button>
+                                <button
+                                    class="settings-tab-btn w-full flex items-center px-4 py-2 text-sm rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
+                                    data-tab="appearance">
+                                    <i class="fas fa-paint-brush w-5"></i>
+                                    <span class="ml-2">Appearance</span>
+                                </button>
+                                <button
+                                    class="settings-tab-btn w-full flex items-center px-4 py-2 text-sm rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
+                                    data-tab="data">
+                                    <i class="fas fa-database w-5"></i>
+                                    <span class="ml-2">Data Management</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Settings Content -->
+                        <div class="p-6 w-full md:w-3/4">
+                            <!-- Categories Tab (Visible by Default) -->
+                            <div id="categories-tab" class="settings-tab">
+                                <div class="flex justify-between items-center mb-6">
+                                    <h3 class="text-xl font-semibold text-gray-800 dark:text-white">Categories
+                                        Management</h3>
+                                    <button
+                                        class="px-3 py-1.5 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors text-sm flex items-center">
+                                        <i class="fas fa-plus mr-2"></i> Add Category
+                                    </button>
+                                </div>
+
+                                <div class="mb-4">
+                                    <input type="text" placeholder="Search categories..."
+                                        class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:text-white">
+                                </div>
+
+                                <div class="space-y-3 max-h-96 overflow-y-auto custom-scrollbar">
+                                    <!-- Income Category -->
+                                    <div
+                                        class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                                        <div class="flex items-center">
+                                            <div
+                                                class="h-8 w-8 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center text-green-500 dark:text-green-400 mr-3">
+                                                <i class="fas fa-briefcase"></i>
+                                            </div>
+                                            <div>
+                                                <p class="font-medium text-gray-800 dark:text-white">Salary</p>
+                                                <p class="text-xs text-green-600 dark:text-green-400">Income</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex space-x-2">
+                                            <button
+                                                class="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button
+                                                class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Expense Category -->
+                                    <div
+                                        class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                                        <div class="flex items-center">
+                                            <div
+                                                class="h-8 w-8 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center text-blue-500 dark:text-blue-400 mr-3">
+                                                <i class="fas fa-shopping-basket"></i>
+                                            </div>
+                                            <div>
+                                                <p class="font-medium text-gray-800 dark:text-white">Groceries</p>
+                                                <p class="text-xs text-red-600 dark:text-red-400">Expense</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex space-x-2">
+                                            <button
+                                                class="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button
+                                                class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Expense Category -->
+                                    <div
+                                        class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                                        <div class="flex items-center">
+                                            <div
+                                                class="h-8 w-8 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center text-purple-500 dark:text-purple-400 mr-3">
+                                                <i class="fas fa-home"></i>
+                                            </div>
+                                            <div>
+                                                <p class="font-medium text-gray-800 dark:text-white">Housing</p>
+                                                <p class="text-xs text-red-600 dark:text-red-400">Expense</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex space-x-2">
+                                            <button
+                                                class="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button
+                                                class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- More categories... -->
+                                    <div
+                                        class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                                        <div class="flex items-center">
+                                            <div
+                                                class="h-8 w-8 bg-yellow-100 dark:bg-yellow-900/30 rounded-full flex items-center justify-center text-yellow-500 dark:text-yellow-400 mr-3">
+                                                <i class="fas fa-utensils"></i>
+                                            </div>
+                                            <div>
+                                                <p class="font-medium text-gray-800 dark:text-white">Dining Out</p>
+                                                <p class="text-xs text-red-600 dark:text-red-400">Expense</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex space-x-2">
+                                            <button
+                                                class="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button
+                                                class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div
+                                        class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                                        <div class="flex items-center">
+                                            <div
+                                                class="h-8 w-8 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center text-green-500 dark:text-green-400 mr-3">
+                                                <i class="fas fa-bus"></i>
+                                            </div>
+                                            <div>
+                                                <p class="font-medium text-gray-800 dark:text-white">Transportation</p>
+                                                <p class="text-xs text-red-600 dark:text-red-400">Expense</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex space-x-2">
+                                            <button
+                                                class="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button
+                                                class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Accounts Tab (Hidden) -->
+                            <div id="accounts-tab" class="settings-tab hidden">
+                                <div class="flex justify-between items-center mb-6">
+                                    <h3 class="text-xl font-semibold text-gray-800 dark:text-white">Linked Accounts</h3>
+                                    <button
+                                        class="px-3 py-1.5 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors text-sm flex items-center">
+                                        <i class="fas fa-plus mr-2"></i> Link Account
+                                    </button>
+                                </div>
+
+                                <div class="bg-yellow-50 dark:bg-yellow-900/20 p-4 rounded-lg mb-6">
+                                    <p class="text-sm text-yellow-700 dark:text-yellow-300"><i
+                                            class="fas fa-info-circle mr-2"></i> Linking bank accounts will allow
+                                        automatic import of transactions.</p>
+                                </div>
+
+                                <div class="space-y-4">
+                                    <!-- Linked Account -->
+                                    <div
+                                        class="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+                                        <div class="flex items-center">
+                                            <div
+                                                class="h-10 w-10 bg-blue-100 dark:bg-blue-900/30 rounded-md flex items-center justify-center text-blue-500 dark:text-blue-400 mr-4">
+                                                <i class="fas fa-university text-lg"></i>
+                                            </div>
+                                            <div>
+                                                <p class="font-medium text-gray-800 dark:text-white">National Bank</p>
+                                                <p class="text-xs text-gray-500 dark:text-gray-400">Checking **** 5678
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <span
+                                                class="px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs rounded-md mr-3">Connected</span>
+                                            <button
+                                                class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Linked Account -->
+                                    <div
+                                        class="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+                                        <div class="flex items-center">
+                                            <div
+                                                class="h-10 w-10 bg-purple-100 dark:bg-purple-900/30 rounded-md flex items-center justify-center text-purple-500 dark:text-purple-400 mr-4">
+                                                <i class="fas fa-credit-card text-lg"></i>
+                                            </div>
+                                            <div>
+                                                <p class="font-medium text-gray-800 dark:text-white">City Credit Union
+                                                </p>
+                                                <p class="text-xs text-gray-500 dark:text-gray-400">Savings **** 9012
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <span
+                                                class="px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs rounded-md mr-3">Connected</span>
+                                            <button
+                                                class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Disconnected Account -->
+                                    <div
+                                        class="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+                                        <div class="flex items-center">
+                                            <div
+                                                class="h-10 w-10 bg-red-100 dark:bg-red-900/30 rounded-md flex items-center justify-center text-red-500 dark:text-red-400 mr-4">
+                                                <i class="fas fa-credit-card text-lg"></i>
+                                            </div>
+                                            <div>
+                                                <p class="font-medium text-gray-800 dark:text-white">Global Credit Card
+                                                </p>
+                                                <p class="text-xs text-gray-500 dark:text-gray-400">Credit **** 3456</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <span
+                                                class="px-2 py-1 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 text-xs rounded-md mr-3">Reconnect</span>
+                                            <button
+                                                class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Notifications Tab (Hidden) -->
+                            <div id="notifications-tab" class="settings-tab hidden">
+                                <h3 class="text-xl font-semibold text-gray-800 dark:text-white mb-6">Notification
+                                    Preferences</h3>
+
+                                <div class="space-y-6">
+                                    <!-- In-App Notifications -->
+                                    <div>
+                                        <h4 class="text-lg font-medium text-gray-800 dark:text-white mb-3">In-App
+                                            Notifications</h4>
+                                        <div class="space-y-3">
+                                            <div class="flex items-center justify-between">
+                                                <div>
+                                                    <p class="font-medium text-gray-700 dark:text-gray-300">Low Balance
+                                                        Alerts</p>
+                                                    <p class="text-sm text-gray-500 dark:text-gray-400">Notify when
+                                                        account balance falls below $100</p>
+                                                </div>
+                                                <label class="inline-flex items-center cursor-pointer">
+                                                    <input type="checkbox" value="" class="sr-only peer" checked>
+                                                    <div
+                                                        class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 dark:peer-focus:ring-indigo-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600">
+                                                    </div>
+                                                </label>
+                                            </div>
+
+                                            <div class="flex items-center justify-between">
+                                                <div>
+                                                    <p class="font-medium text-gray-700 dark:text-gray-300">Budget
+                                                        Warnings</p>
+                                                    <p class="text-sm text-gray-500 dark:text-gray-400">Notify when
+                                                        budget category reaches 80% spent</p>
+                                                </div>
+                                                <label class="inline-flex items-center cursor-pointer">
+                                                    <input type="checkbox" value="" class="sr-only peer" checked>
+                                                    <div
+                                                        class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 dark:peer-focus:ring-indigo-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600">
+                                                    </div>
+                                                </label>
+                                            </div>
+
+                                            <div class="flex items-center justify-between">
+                                                <div>
+                                                    <p class="font-medium text-gray-700 dark:text-gray-300">Unusual
+                                                        Activity</p>
+                                                    <p class="text-sm text-gray-500 dark:text-gray-400">Notify about
+                                                        larger-than-normal transactions</p>
+                                                </div>
+                                                <label class="inline-flex items-center cursor-pointer">
+                                                    <input type="checkbox" value="" class="sr-only peer" checked>
+                                                    <div
+                                                        class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 dark:peer-focus:ring-indigo-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600">
+                                                    </div>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Browser Notifications -->
+                                    <div>
+                                        <h4 class="text-lg font-medium text-gray-800 dark:text-white mb-3">Browser Push
+                                            Notifications</h4>
+                                        <div class="space-y-3">
+                                            <div class="flex items-center justify-between">
+                                                <div>
+                                                    <p class="font-medium text-gray-700 dark:text-gray-300">Enable Push
+                                                        Notifications</p>
+                                                    <p class="text-sm text-gray-500 dark:text-gray-400">Receive
+                                                        notifications even when browser is closed</p>
+                                                </div>
+                                                <label class="inline-flex items-center cursor-pointer">
+                                                    <input type="checkbox" value="" class="sr-only peer">
+                                                    <div
+                                                        class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 dark:peer-focus:ring-indigo-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600">
+                                                    </div>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                                            <i class="fas fa-info-circle mr-1"></i> Browser notifications require
+                                            permission to be granted.
+                                        </div>
+                                    </div>
+
+                                    <!-- Notification Schedule -->
+                                    <div>
+                                        <h4 class="text-lg font-medium text-gray-800 dark:text-white mb-3">Reminder
+                                            Schedule</h4>
+                                        <div class="space-y-3">
+                                            <div class="flex items-center justify-between">
+                                                <div>
+                                                    <p class="font-medium text-gray-700 dark:text-gray-300">Weekly
+                                                        Summary</p>
+                                                    <p class="text-sm text-gray-500 dark:text-gray-400">Receive a
+                                                        summary of your finances every week</p>
+                                                </div>
+                                                <label class="inline-flex items-center cursor-pointer">
+                                                    <input type="checkbox" value="" class="sr-only peer" checked>
+                                                    <div
+                                                        class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 dark:peer-focus:ring-indigo-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600">
+                                                    </div>
+                                                </label>
+                                            </div>
+
+                                            <div class="flex items-center justify-between">
+                                                <div>
+                                                    <p class="font-medium text-gray-700 dark:text-gray-300">Bill Due
+                                                        Reminders</p>
+                                                    <p class="text-sm text-gray-500 dark:text-gray-400">Get notified 3
+                                                        days before bills are due</p>
+                                                </div>
+                                                <label class="inline-flex items-center cursor-pointer">
+                                                    <input type="checkbox" value="" class="sr-only peer" checked>
+                                                    <div
+                                                        class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 dark:peer-focus:ring-indigo-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600">
+                                                    </div>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Appearance Tab (Hidden) -->
+                            <div id="appearance-tab" class="settings-tab hidden">
+                                <h3 class="text-xl font-semibold text-gray-800 dark:text-white mb-6">Appearance Settings
+                                </h3>
+
+                                <div class="space-y-6">
+                                    <!-- Theme Selection -->
+                                    <div>
+                                        <h4 class="text-lg font-medium text-gray-800 dark:text-white mb-3">Theme</h4>
+                                        <div class="flex space-x-4">
+                                            <button id="light-theme-btn"
+                                                class="theme-btn border-2 border-gray-200 dark:border-gray-600 rounded-md p-4 w-32 flex flex-col items-center justify-center space-y-2 hover:border-indigo-500 dark:hover:border-indigo-500 transition-colors">
+                                                <div
+                                                    class="h-12 w-12 rounded-full bg-white border border-gray-300 flex items-center justify-center text-yellow-500">
+                                                    <i class="fas fa-sun text-lg"></i>
+                                                </div>
+                                                <span
+                                                    class="text-sm font-medium text-gray-800 dark:text-white">Light</span>
+                                            </button>
+
+                                            <button id="dark-theme-btn"
+                                                class="theme-btn border-2 border-gray-200 dark:border-gray-600 rounded-md p-4 w-32 flex flex-col items-center justify-center space-y-2 hover:border-indigo-500 dark:hover:border-indigo-500 transition-colors">
+                                                <div
+                                                    class="h-12 w-12 rounded-full bg-gray-800 border border-gray-600 flex items-center justify-center text-blue-400">
+                                                    <i class="fas fa-moon text-lg"></i>
+                                                </div>
+                                                <span
+                                                    class="text-sm font-medium text-gray-800 dark:text-white">Dark</span>
+                                            </button>
+
+                                            <button id="system-theme-btn"
+                                                class="theme-btn border-2 border-indigo-500 rounded-md p-4 w-32 flex flex-col items-center justify-center space-y-2 hover:border-indigo-500 dark:hover:border-indigo-500 transition-colors">
+                                                <div
+                                                    class="h-12 w-12 rounded-full bg-gradient-to-r from-white to-gray-800 border border-gray-400 flex items-center justify-center">
+                                                    <i class="fas fa-desktop text-lg text-indigo-500"></i>
+                                                </div>
+                                                <span
+                                                    class="text-sm font-medium text-gray-800 dark:text-white">System</span>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Currency Format -->
+                                    <div>
+                                        <h4 class="text-lg font-medium text-gray-800 dark:text-white mb-3">Currency
+                                            Format</h4>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div>
+                                                <label
+                                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Currency
+                                                    Symbol</label>
+                                                <select
+                                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:text-white">
+                                                    <option value="$">$ - US Dollar</option>
+                                                    <option value="€">€ - Euro</option>
+                                                    <option value="£">£ - British Pound</option>
+                                                    <option value="¥">¥ - Japanese Yen</option>
+                                                    <option value="₹">₹ - Indian Rupee</option>
+                                                    <option value="custom">Custom...</option>
+                                                </select>
+                                            </div>
+
+                                            <div>
+                                                <label
+                                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Decimal
+                                                    Places</label>
+                                                <select
+                                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:text-white">
+                                                    <option value="2">2 decimal places</option>
+                                                    <option value="0">No decimal places</option>
+                                                    <option value="3">3 decimal places</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Date Format -->
+                                    <div>
+                                        <h4 class="text-lg font-medium text-gray-800 dark:text-white mb-3">Date Format
+                                        </h4>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div>
+                                                <select
+                                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:text-white">
+                                                    <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+                                                    <option value="DD/MM/YYYY">DD/MM/YYYY</option>
+                                                    <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+                                                    <option value="MMM DD, YYYY">MMM DD, YYYY</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Data Management Tab (Hidden) -->
+                            <div id="data-tab" class="settings-tab hidden">
+                                <h3 class="text-xl font-semibold text-gray-800 dark:text-white mb-6">Data Management
+                                </h3>
+
+                                <div class="space-y-6">
+                                    <!-- Data Export -->
+                                    <div class="p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+                                        <h4 class="text-lg font-medium text-gray-800 dark:text-white mb-2">Export Data
+                                        </h4>
+                                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Download your financial
+                                            data in various formats.</p>
+                                        <div class="flex flex-wrap gap-3">
+                                            <button
+                                                class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors flex items-center text-sm">
+                                                <i class="fas fa-file-csv mr-2"></i> Export as CSV
+                                            </button>
+                                            <button
+                                                class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors flex items-center text-sm">
+                                                <i class="fas fa-file-excel mr-2"></i> Export as Excel
+                                            </button>
+                                            <button
+                                                class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors flex items-center text-sm">
+                                                <i class="fas fa-file-pdf mr-2"></i> Export as PDF
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Data Import -->
+                                    <div class="p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+                                        <h4 class="text-lg font-medium text-gray-800 dark:text-white mb-2">Import Data
+                                        </h4>
+                                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Import transactions
+                                            from files.</p>
+                                        <div class="flex items-center justify-center w-full">
+                                            <label
+                                                class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-800">
+                                                <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                                    <i class="fas fa-cloud-upload-alt mb-3 text-gray-400 text-2xl"></i>
+                                                    <p class="mb-2 text-sm text-gray-500 dark:text-gray-400"><span
+                                                            class="font-semibold">Click to upload</span> or drag and
+                                                        drop</p>
+                                                    <p class="text-xs text-gray-500 dark:text-gray-400">CSV, Excel, or
+                                                        OFX files</p>
+                                                </div>
+                                                <input type="file" class="hidden" />
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <!-- Data Backup & Reset -->
+                                    <div class="p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+                                        <h4 class="text-lg font-medium text-gray-800 dark:text-white mb-2">Data
+                                            Management</h4>
+                                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Back up or reset your
+                                            financial data.</p>
+                                        <div class="flex flex-wrap gap-3">
+                                            <button
+                                                class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors flex items-center text-sm">
+                                                <i class="fas fa-cloud-download-alt mr-2"></i> Backup Data
+                                            </button>
+                                            <button
+                                                class="px-4 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700 transition-colors flex items-center text-sm">
+                                                <i class="fas fa-cloud-upload-alt mr-2"></i> Restore Backup
+                                            </button>
+                                            <button
+                                                class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors flex items-center text-sm">
+                                                <i class="fas fa-exclamation-triangle mr-2"></i> Reset All Data
+                                            </button>
+                                        </div>
+                                        <p class="mt-2 text-xs text-red-500"><i
+                                                class="fas fa-exclamation-circle mr-1"></i> Warning: Resetting will
+                                            permanently delete all your data and cannot be undone.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Add Transaction Modal -->
+        <div id="add-transaction-modal" class="fixed inset-0 z-50 hidden">
+            <div class="absolute inset-0 bg-black bg-opacity-50"></div>
+            <div class="absolute inset-0 flex items-center justify-center p-4">
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md mx-auto fade-in slide-in">
+                    <div class="flex justify-between items-center p-6 border-b border-gray-200 dark:border-gray-700">
+                        <h3 class="text-xl font-semibold text-gray-800 dark:text-white">Add Transaction</h3>
+                        <button id="close-transaction-modal"
+                            class="text-gray-400 hover:text-gray-500 focus:outline-none">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+
+                    <form class="p-6">
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Transaction
+                                Type</label>
+                            <div class="flex w-full rounded-md shadow-sm">
+                                <button type="button" id="expense-btn"
+                                    class="relative inline-flex items-center justify-center flex-1 bg-red-50 text-red-600 dark:bg-red-900/30 dark:text-red-400 px-4 py-2 rounded-l-md border border-red-300 dark:border-red-700/50 hover:bg-red-100 dark:hover:bg-red-900/50 font-medium">
+                                    <i class="fas fa-minus-circle mr-2"></i> Expense
+                                </button>
+                                <button type="button" id="income-btn"
+                                    class="relative inline-flex items-center justify-center flex-1 bg-gray-50 dark:bg-gray-700 px-4 py-2 rounded-r-md border border-gray-300 dark:border-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 font-medium">
+                                    <i class="fas fa-plus-circle mr-2"></i> Income
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                                for="amount">Amount</label>
+                            <div class="relative mt-1 rounded-md shadow-sm">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <span class="text-gray-500 sm:text-sm">$</span>
+                                </div>
+                                <input type="number" name="amount" id="amount"
+                                    class="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                    placeholder="0.00" step="0.01">
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                                for="date">Date</label>
+                            <input type="date" name="date" id="date"
+                                class="focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                                for="category">Category</label>
+                            <select id="category" name="category"
+                                class="focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                <option value="" disabled selected>Select a category</option>
+                                <optgroup label="Expenses">
+                                    <option value="groceries">Groceries</option>
+                                    <option value="housing">Housing</option>
+                                    <option value="transportation">Transportation</option>
+                                    <option value="dining">Dining Out</option>
+                                    <option value="shopping">Shopping</option>
+                                    <option value="utilities">Bills & Utilities</option>
+                                    <option value="entertainment">Entertainment</option>
+                                    <option value="health">Health & Medical</option>
+                                </optgroup>
+                                <optgroup label="Income">
+                                    <option value="salary">Salary</option>
+                                    <option value="freelance">Freelance</option>
+                                    <option value="investments">Investments</option>
+                                    <option value="gifts">Gifts</option>
+                                </optgroup>
+                            </select>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                                for="description">Description</label>
+                            <input type="text" name="description" id="description"
+                                class="focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                placeholder="Enter description...">
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                                for="notes">Notes (Optional)</label>
+                            <textarea id="notes" name="notes" rows="3"
+                                class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                placeholder="Add any additional details..."></textarea>
+                        </div>
+
+                        <div class="flex justify-end pt-4">
+                            <button type="button" id="cancel-transaction"
+                                class="bg-white dark:bg-gray-700 py-2 px-4 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 mr-3">
+                                Cancel
+                            </button>
+                            <button type="submit"
+                                class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                Save Transaction
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Widget -->
+        <div id="chat-widget" class="fixed bottom-6 right-6 z-10">
+            <button id="chat-toggle"
+                class="w-14 h-14 rounded-full bg-indigo-600 text-white shadow-lg flex items-center justify-center hover:bg-indigo-700 transition-colors focus:outline-none">
+                <i id="chat-icon" class="fas fa-comments text-xl"></i>
+            </button>
+
+            <div id="chat-popup"
+                class="hidden bg-white dark:bg-gray-800 rounded-lg shadow-xl w-80 md:w-96 absolute bottom-16 right-0 overflow-hidden">
+                <div class="p-4 bg-indigo-600 text-white flex justify-between items-center">
+                    <h3 class="font-medium">Financial Assistant</h3>
+                    <button id="close-chat" class="text-white hover:text-gray-200 focus:outline-none">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+
+                <div class="h-80 overflow-y-auto p-4 space-y-4" id="chat-messages">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0 bg-indigo-100 dark:bg-indigo-900/30 rounded-full p-2">
+                            <i class="fas fa-robot text-indigo-600 dark:text-indigo-400"></i>
+                        </div>
+                        <div class="ml-3 bg-gray-100 dark:bg-gray-700 rounded-lg py-2 px-3 max-w-[80%]">
+                            <p class="text-sm text-gray-800 dark:text-gray-200">Hi there! I'm your financial assistant.
+                                You can ask me questions about your finances like "Show me expenses for last month" or
+                                "How much did I spend on groceries?"</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-4 border-t border-gray-200 dark:border-gray-700">
+                    <form id="chat-form" class="flex items-center">
+                        <input type="text" id="chat-input"
+                            class="flex-grow px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-l-md focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:text-white"
+                            placeholder="Ask something...">
+                        <button type="submit"
+                            class="bg-indigo-600 text-white px-4 py-2 rounded-r-md hover:bg-indigo-700 transition-colors">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <script id="app-script">
+            document.addEventListener('DOMContentLoaded', function () {
+                // Check for first visit to show onboarding
+                const hasVisited = localStorage.getItem('pocketpilot_visited');
+                if (!hasVisited) {
+                    document.getElementById('onboarding-modal').classList.remove('hidden');
+                    localStorage.setItem('pocketpilot_visited', 'true');
+                }
+
+                // Initialize charts
+                initCharts();
+
+                // Navigation
+                const navLinks = document.querySelectorAll('.nav-link');
+                const pageViews = document.querySelectorAll('.page-view');
+
+                navLinks.forEach(link => {
+                    link.addEventListener('click', function () {
+                        const target = this.getAttribute('data-target');
+
+                        // Update nav active state
+                        navLinks.forEach(l => l.classList.remove('active', 'bg-indigo-700'));
+                        this.classList.add('active', 'bg-indigo-700');
+
+                        // Show correct view
+                        pageViews.forEach(view => {
+                            view.classList.add('hidden');
+                        });
+                        document.getElementById(`${target}-view`).classList.remove('hidden');
+                    });
+                });
+
+                // Settings Tabs
+                const settingsTabs = document.querySelectorAll('.settings-tab-btn');
+                const settingsContents = document.querySelectorAll('.settings-tab');
+
+                settingsTabs.forEach(tab => {
+                    tab.addEventListener('click', function () {
+                        const target = this.getAttribute('data-tab');
+
+                        // Update tabs active state
+                        settingsTabs.forEach(t => {
+                            t.classList.remove('bg-indigo-100', 'dark:bg-indigo-900/40', 'text-indigo-700', 'dark:text-indigo-300');
+                            t.classList.add('text-gray-700', 'dark:text-gray-300', 'hover:bg-gray-200', 'dark:hover:bg-gray-700');
+                        });
+                        this.classList.add('bg-indigo-100', 'dark:bg-indigo-900/40', 'text-indigo-700', 'dark:text-indigo-300');
+                        this.classList.remove('text-gray-700', 'dark:text-gray-300', 'hover:bg-gray-200', 'dark:hover:bg-gray-700');
+
+                        // Show correct tab content
+                        settingsContents.forEach(content => {
+                            content.classList.add('hidden');
+                        });
+                        document.getElementById(`${target}-tab`).classList.remove('hidden');
+                    });
+                });
+
+                // Theme Toggle
+                const lightThemeBtn = document.getElementById('light-theme-btn');
+                const darkThemeBtn = document.getElementById('dark-theme-btn');
+                const systemThemeBtn = document.getElementById('system-theme-btn');
+                const themeBtns = document.querySelectorAll('.theme-btn');
+
+                // Check for saved theme preference
+                const savedTheme = localStorage.getItem('pocketpilot_theme');
+                if (savedTheme === 'dark') {
+                    document.documentElement.classList.add('dark');
+                    updateThemeButtons('dark');
+                } else if (savedTheme === 'light') {
+                    document.documentElement.classList.remove('dark');
+                    updateThemeButtons('light');
+                } else {
+                    // Default to system preference
+                    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                        document.documentElement.classList.add('dark');
+                    } else {
+                        document.documentElement.classList.remove('dark');
+                    }
+                    updateThemeButtons('system');
+                }
+
+                function updateThemeButtons(theme) {
+                    themeBtns.forEach(btn => {
+                        btn.classList.remove('border-indigo-500');
+                        btn.classList.add('border-gray-200', 'dark:border-gray-600');
+                    });
+
+                    if (theme === 'light') {
+                        lightThemeBtn.classList.remove('border-gray-200', 'dark:border-gray-600');
+                        lightThemeBtn.classList.add('border-indigo-500');
+                    } else if (theme === 'dark') {
+                        darkThemeBtn.classList.remove('border-gray-200', 'dark:border-gray-600');
+                        darkThemeBtn.classList.add('border-indigo-500');
+                    } else {
+                        systemThemeBtn.classList.remove('border-gray-200', 'dark:border-gray-600');
+                        systemThemeBtn.classList.add('border-indigo-500');
+                    }
+                }
+
+                lightThemeBtn.addEventListener('click', function () {
+                    document.documentElement.classList.remove('dark');
+                    localStorage.setItem('pocketpilot_theme', 'light');
+                    updateThemeButtons('light');
+                });
+
+                darkThemeBtn.addEventListener('click', function () {
+                    document.documentElement.classList.add('dark');
+                    localStorage.setItem('pocketpilot_theme', 'dark');
+                    updateThemeButtons('dark');
+                });
+
+                systemThemeBtn.addEventListener('click', function () {
+                    localStorage.removeItem('pocketpilot_theme');
+                    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                        document.documentElement.classList.add('dark');
+                    } else {
+                        document.documentElement.classList.remove('dark');
+                    }
+                    updateThemeButtons('system');
+                });
+
+                // Transaction Modal
+                const addTransactionBtn = document.getElementById('add-transaction-btn');
+                const addTransactionBtn2 = document.getElementById('add-transaction-btn-2');
+                const transactionModal = document.getElementById('add-transaction-modal');
+                const closeTransactionBtn = document.getElementById('close-transaction-modal');
+                const cancelTransactionBtn = document.getElementById('cancel-transaction');
+                const expenseBtn = document.getElementById('expense-btn');
+                const incomeBtn = document.getElementById('income-btn');
+
+                function toggleTransactionModal() {
+                    transactionModal.classList.toggle('hidden');
+                }
+
+                [addTransactionBtn, addTransactionBtn2].forEach(btn => {
+                    if (btn) {
+                        btn.addEventListener('click', toggleTransactionModal);
+                    }
+                });
+
+                [closeTransactionBtn, cancelTransactionBtn].forEach(btn => {
+                    btn.addEventListener('click', toggleTransactionModal);
+                });
+
+                expenseBtn.addEventListener('click', function () {
+                    expenseBtn.classList.remove('bg-gray-50', 'dark:bg-gray-700', 'text-gray-700', 'dark:text-gray-300');
+                    expenseBtn.classList.add('bg-red-50', 'text-red-600', 'dark:bg-red-900/30', 'dark:text-red-400', 'border-red-300', 'dark:border-red-700/50');
+
+                    incomeBtn.classList.remove('bg-green-50', 'text-green-600', 'dark:bg-green-900/30', 'dark:text-green-400', 'border-green-300', 'dark:border-green-700/50');
+                    incomeBtn.classList.add('bg-gray-50', 'dark:bg-gray-700', 'text-gray-700', 'dark:text-gray-300');
+                });
+
+                incomeBtn.addEventListener('click', function () {
+                    incomeBtn.classList.remove('bg-gray-50', 'dark:bg-gray-700', 'text-gray-700', 'dark:text-gray-300');
+                    incomeBtn.classList.add('bg-green-50', 'text-green-600', 'dark:bg-green-900/30', 'dark:text-green-400', 'border-green-300', 'dark:border-green-700/50');
+
+                    expenseBtn.classList.remove('bg-red-50', 'text-red-600', 'dark:bg-red-900/30', 'dark:text-red-400', 'border-red-300', 'dark:border-red-700/50');
+                    expenseBtn.classList.add('bg-gray-50', 'dark:bg-gray-700', 'text-gray-700', 'dark:text-gray-300');
+                });
+
+                // Onboarding navigation
+                const onboardingSteps = document.querySelectorAll('.onboarding-step');
+                const nextBtns = document.querySelectorAll('.onboarding-next');
+                const prevBtns = document.querySelectorAll('.onboarding-prev');
+                const finishOnboardingBtn = document.getElementById('finish-onboarding');
+
+                nextBtns.forEach(btn => {
+                    btn.addEventListener('click', function () {
+                        const currentStep = parseInt(this.closest('.onboarding-step').getAttribute('data-step'));
+                        const nextStep = currentStep + 1;
+
+                        onboardingSteps.forEach(step => {
+                            step.classList.add('hidden');
+                        });
+
+                        document.querySelector(`.onboarding-step[data-step="${nextStep}"]`).classList.remove('hidden');
+                    });
+                });
+
+                prevBtns.forEach(btn => {
+                    btn.addEventListener('click', function () {
+                        const currentStep = parseInt(this.closest('.onboarding-step').getAttribute('data-step'));
+                        const prevStep = currentStep - 1;
+
+                        onboardingSteps.forEach(step => {
+                            step.classList.add('hidden');
+                        });
+
+                        document.querySelector(`.onboarding-step[data-step="${prevStep}"]`).classList.remove('hidden');
+                    });
+                });
+
+                finishOnboardingBtn.addEventListener('click', function () {
+                    document.getElementById('onboarding-modal').classList.add('hidden');
+                });
+
+                // Chat Widget
+                const chatToggle = document.getElementById('chat-toggle');
+                const chatPopup = document.getElementById('chat-popup');
+                const closeChat = document.getElementById('close-chat');
+                const chatForm = document.getElementById('chat-form');
+                const chatInput = document.getElementById('chat-input');
+                const chatMessages = document.getElementById('chat-messages');
+
+                chatToggle.addEventListener('click', function () {
+                    chatPopup.classList.toggle('hidden');
+                });
+
+                closeChat.addEventListener('click', function () {
+                    chatPopup.classList.add('hidden');
+                });
+
+                chatForm.addEventListener('submit', function (e) {
+                    e.preventDefault();
+                    const message = chatInput.value.trim();
+                    if (message) {
+                        // Add user message to chat
+                        addChatMessage(message, 'user');
+                        chatInput.value = '';
+
+                        // Simulate AI response after small delay
+                        setTimeout(() => {
+                            const response = "This is a prototype. In the full version, I'll respond to your queries about your finances.";
+                            addChatMessage(response, 'assistant');
+                        }, 1000);
+                    }
+                });
+
+                function addChatMessage(message, sender) {
+                    const msgDiv = document.createElement('div');
+                    msgDiv.className = 'flex items-start';
+
+                    if (sender === 'user') {
+                        msgDiv.classList.add('justify-end');
+                        msgDiv.innerHTML = `
+              <div class="mr-3 bg-indigo-100 dark:bg-indigo-900/50 rounded-lg py-2 px-3 max-w-[80%]">
+                <p class="text-sm text-gray-800 dark:text-gray-200">${message}</p>
+              </div>
+              <div class="flex-shrink-0 bg-gray-200 dark:bg-gray-600 rounded-full p-2">
+                <i class="fas fa-user text-gray-600 dark:text-gray-300"></i>
+              </div>
+            `;
+                    } else {
+                        msgDiv.innerHTML = `
+              <div class="flex-shrink-0 bg-indigo-100 dark:bg-indigo-900/30 rounded-full p-2">
+                <i class="fas fa-robot text-indigo-600 dark:text-indigo-400"></i>
+              </div>
+              <div class="ml-3 bg-gray-100 dark:bg-gray-700 rounded-lg py-2 px-3 max-w-[80%]">
+                <p class="text-sm text-gray-800 dark:text-gray-200">${message}</p>
+              </div>
+            `;
+                    }
+
+                    chatMessages.appendChild(msgDiv);
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }
+
+                // Initialize Charts
+                function initCharts() {
+                    // Dashboard Mini Charts
+                    if (document.getElementById('income-chart')) {
+                        const incomeChart = new Chart(document.getElementById('income-chart'), {
+                            type: 'doughnut',
+                            data: {
+                                labels: ['Salary', 'Freelance', 'Investments'],
+                                datasets: [{
+                                    data: [75, 15, 10],
+                                    backgroundColor: ['#4f46e5', '#8b5cf6', '#a78bfa'],
+                                    borderWidth: 0
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: {
+                                        position: 'bottom',
+                                        labels: {
+                                            boxWidth: 12
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    }
+
+                    if (document.getElementById('expenses-chart')) {
+                        const expensesChart = new Chart(document.getElementById('expenses-chart'), {
+                            type: 'doughnut',
+                            data: {
+                                labels: ['Housing', 'Groceries', 'Dining', 'Shopping', 'Transport'],
+                                datasets: [{
+                                    data: [45, 20, 15, 10, 10],
+                                    backgroundColor: ['#9333ea', '#3b82f6', '#facc15', '#ef4444', '#10b981'],
+                                    borderWidth: 0
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: {
+                                        position: 'bottom',
+                                        labels: {
+                                            boxWidth: 12
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    }
+
+                    // Reports Charts
+                    if (document.getElementById('income-expense-chart')) {
+                        const incomeExpenseChart = new Chart(document.getElementById('income-expense-chart'), {
+                            type: 'bar',
+                            data: {
+                                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                                datasets: [
+                                    {
+                                        label: 'Income',
+                                        data: [3200, 3300, 3400, 3100, 3500, 3450],
+                                        backgroundColor: '#10b981',
+                                        borderWidth: 0
+                                    },
+                                    {
+                                        label: 'Expenses',
+                                        data: [2700, 2500, 2800, 2600, 2400, 2200],
+                                        backgroundColor: '#ef4444',
+                                        borderWidth: 0
+                                    }
+                                ]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                scales: {
+                                    x: {
+                                        grid: {
+                                            display: false
+                                        }
+                                    },
+                                    y: {
+                                        beginAtZero: true
+                                    }
+                                }
+                            }
+                        });
+                    }
+
+                    if (document.getElementById('expense-category-chart')) {
+                        const expenseCategoryChart = new Chart(document.getElementById('expense-category-chart'), {
+                            type: 'pie',
+                            data: {
+                                labels: ['Housing', 'Groceries', 'Transportation', 'Dining Out', 'Shopping', 'Other'],
+                                datasets: [{
+                                    data: [45.6, 15.8, 12.1, 9.9, 8.2, 8.4],
+                                    backgroundColor: ['#9333ea', '#3b82f6', '#10b981', '#facc15', '#ef4444', '#6b7280'],
+                                    borderWidth: 0
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: {
+                                        position: 'right',
+                                        labels: {
+                                            boxWidth: 12
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    }
+
+                    if (document.getElementById('monthly-trend-chart')) {
+                        const monthlyTrendChart = new Chart(document.getElementById('monthly-trend-chart'), {
+                            type: 'line',
+                            data: {
+                                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                                datasets: [
+                                    {
+                                        label: 'Income',
+                                        data: [3200, 3300, 3400, 3100, 3500, 3450, 3400, 3200, 3300, 3500, 3600, 4000],
+                                        borderColor: '#10b981',
+                                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                                        fill: true,
+                                        tension: 0.3
+                                    },
+                                    {
+                                        label: 'Expenses',
+                                        data: [2700, 2500, 2800, 2600, 2400, 2200, 2300, 2400, 2500, 2600, 2700, 2800],
+                                        borderColor: '#ef4444',
+                                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                                        fill: true,
+                                        tension: 0.3
+                                    }
+                                ]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                scales: {
+                                    y: {
+                                        beginAtZero: true
+                                    }
+                                },
+                                plugins: {
+                                    tooltip: {
+                                        mode: 'index',
+                                        intersect: false
+                                    }
+                                }
+                            }
+                        });
+                    }
+                }
+            });
+        </script>
+    </div>
+</body>
+
+</html>
